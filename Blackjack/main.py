@@ -1,12 +1,18 @@
 # print('hello world!')
 import random
+
+replay = True
+playing = True
+player_bust = False
+blackjack = False
+
 class Hand:
-    name = ''
-    cards = {}
-    total = 0
-    count = 0
+
     def __init__(self, name):
         self.name = name
+        self.cards = {}
+        self.total = 0
+        self.count = 0
     def add(self, new_card):
         self.cards[self.count] = new_card
         self.count += 1
@@ -22,13 +28,30 @@ class Hand:
             for x in self.cards:
                 self.total += int(self.cards[x].value)
 
-
     def __str__(self):
         to_print = ''
+        if self.name == 'dealer hand':
+            if not playing:
+                self.show_dealer_hand()
+            else:
+                for x in self.cards:
+                    if x == 0:
+                        to_print += 'down card \n'
+                    else:
+                        to_print += str(self.cards[x])
+                to_print += 'dealer is showing: ' + str(self.total - self.cards[0].value) + '\n\n'
+        else:
+            for x in self.cards:
+                to_print += str(self.cards[x])
+            to_print += 'player total: ' + str(self.total) + ''
+        return to_print
+
+    def show_dealer_hand(self):
+        to_print = 'dealer has:\n'
         for x in self.cards:
             to_print += str(self.cards[x])
-        to_print += '\n\ntotal: ' + str(self.total) + '\n'
-        return to_print
+        to_print += 'dealer total: ' + str(self.total) + '\n'
+        print(to_print)
 
 class Card:
     def __init__(self, name, suit):
@@ -44,7 +67,7 @@ class Card:
     def __str__(self):
         if self.value == 'A':
             self.value = '1 or 11'
-        return 'name: ' + str(self.name) + '\n'
+        return str(self.name) + '\n'
     def ace_is_one(self):
         self.value = 1
     def ace_is_eleven(self):
@@ -103,7 +126,8 @@ def deal_a_card(a_hand):
             is_card_new = True
             a_hand.add(the_deck.deck[card_to_deal])
             the_deck.delt_cards.append(card_to_deal)
-    print(a_hand.name + ' now holds:\n' + str(a_hand))
+    # print(a_hand.name + ' now holds:\n' + str(a_hand))
+
 def deal_an_ace(a_hand):
     print('dealing an ace')
     card_to_deal = 1
@@ -128,32 +152,77 @@ def deal_a_ten(a_hand):
         else:
             card_to_deal += 13
     print(a_hand.name + ' now holds:\n' + str(a_hand))
-
 def deal_a_hand(a_hand):
     deal_a_card(a_hand)
     deal_a_card(a_hand)
-
+    print(a_hand.name + ' now holds:\n' + str(a_hand))
 def deal_hands():
     deal_a_card(player_hand)
     deal_a_card(dealer_hand)
     deal_a_card(player_hand)
     deal_a_card(dealer_hand)
+
 #End Methods ======================================================================================
-the_deck = Deck()
-the_deck.build_deck()
-# print(the_deck)
 
-player_hand = Hand('player hand')
-dealer_hand = Hand('dealer hand')
+while replay:
+    the_deck = Deck()
+    the_deck.build_deck()
 
-deal_a_hand(player_hand)
-playing = True
-while playing == True:
-    answer = input('do you want another card? (y/n)').lower()
-    if answer == 'y':
-        deal_a_card(player_hand)
+    dealer_hand = Hand('dealer hand')
+    deal_a_hand(dealer_hand)
+
+    player_hand = Hand('player hand')
+    deal_a_hand(player_hand)
+
+
+
+    while playing == True:
+        answer = input('hit? (y/n)').lower()
+        if answer == 'y':
+            deal_a_card(player_hand)
+            print('player total: \n' + str(player_hand))
+           # print('dealer is showing: ' + str(dealer_hand.total - dealer_hand.cards[0].value) + '\n')
+            if player_hand.total > 21:
+                print("player bust")
+                player_bust = True
+                playing = False
+            if player_hand.total == 21:
+                print("PLAYER HAS 21")
+                blackjack = True
+                playing = False
+        else:
+            playing = False
+    dealer_hand.show_dealer_hand()
+
+
+    if player_bust:
+        print('Player loses')
     else:
-        playing = False
+        if dealer_hand.total == 21:
+            if blackjack:
+                print('push')
+            else:
+                print('player loses')
+        else:
+            while dealer_hand.total < 17 and player_hand.total > dealer_hand.total:
+                deal_a_card(dealer_hand)
+                dealer_hand.show_dealer_hand()
+                if dealer_hand.total > 21:
+                    print('dealer bust, Player wins!')
+            if player_hand.total > dealer_hand.total:
+                print('Player wins!')
+            if player_hand.total == dealer_hand.total:
+                print('push')
+            else:
+                print('Player loses')
+    play_again = input('play again?(y/n)').lower()
+    if play_again:
+        playing = True
+        player_bust = False
+        blackjack = False
+        print('==============================================')
+    else:
+        replay = False
 # print('player hand:\n' + str(player_hand) + '\n\n')
 # print('dealer hand:\n' + str(dealer_hand))
 
