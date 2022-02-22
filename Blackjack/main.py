@@ -10,10 +10,18 @@ class Hand:
     def add(self, new_card):
         self.cards[self.count] = new_card
         self.count += 1
-        if new_card.value == 'A':
-            self.total += 11
-        else:
-            self.total += int(new_card.value)
+        if new_card.number == 'A':
+            new_card.ace_is_eleven()
+        self.total += int(new_card.value)
+        if self.total > 21:
+            for x in self.cards:
+                if self.cards[x].value == 11:
+                    self.cards[x].ace_is_one()
+                    break
+            self.total = 0
+            for x in self.cards:
+                self.total += int(self.cards[x].value)
+
 
     def __str__(self):
         to_print = ''
@@ -26,6 +34,7 @@ class Card:
     def __init__(self, name, suit):
         self.suit = suit
         self.name = name + suit
+        self.number = name
         if name == 'J' or name == 'Q' or name == 'K':
             self.value = 10
         elif name == 'A':
@@ -84,28 +93,40 @@ class Deck:
             self.count += 1
             self.deck[self.count] = Card('K', n)
             self.count += 1
-
-the_deck = Deck()
-the_deck.build_deck()
-# print(the_deck)
-
-player_hand = Hand('player hand')
-dealer_hand = Hand('dealer hand')
-
+#End Classes ======================================================================================
 def deal_a_card(a_hand):
-    card_to_deal = random.randint(1, 52)
-    if card_to_deal not in the_deck.delt_cards:
-        a_hand.add(the_deck.deck[card_to_deal])
-        the_deck.delt_cards.append(card_to_deal)
+    print('dealing a card')
+    is_card_new = False
+    while not is_card_new:
+        card_to_deal = random.randint(1, 52)
+        if card_to_deal not in the_deck.delt_cards:
+            is_card_new = True
+            a_hand.add(the_deck.deck[card_to_deal])
+            the_deck.delt_cards.append(card_to_deal)
     print(a_hand.name + ' now holds:\n' + str(a_hand))
-
 def deal_an_ace(a_hand):
+    print('dealing an ace')
     card_to_deal = 1
     is_card_new = False
-    while card
-    if card_to_deal not in the_deck.delt_cards:
-        a_hand.add(the_deck.deck[card_to_deal])
-        the_deck.delt_cards.append(card_to_deal)
+    while not is_card_new:
+        if card_to_deal not in the_deck.delt_cards:
+            is_card_new = True
+            a_hand.add(the_deck.deck[card_to_deal])
+            the_deck.delt_cards.append(card_to_deal)
+        else:
+            card_to_deal += 13
+    print(a_hand.name + ' now holds:\n' + str(a_hand))
+def deal_a_ten(a_hand):
+    print('dealing a ten')
+    card_to_deal = 10
+    is_card_new = False
+    while not is_card_new:
+        if card_to_deal not in the_deck.delt_cards:
+            is_card_new = True
+            a_hand.add(the_deck.deck[card_to_deal])
+            the_deck.delt_cards.append(card_to_deal)
+        else:
+            card_to_deal += 13
     print(a_hand.name + ' now holds:\n' + str(a_hand))
 
 def deal_hands():
@@ -126,10 +147,25 @@ def deal_hands():
             dealer_hand.add(the_deck.deck[card_to_deal])
             dealing_to_player = not dealing_to_player
         left_to_deal -= 1
+#End Methods ======================================================================================
+the_deck = Deck()
+the_deck.build_deck()
+# print(the_deck)
 
-deal_a_card(player_hand)
-deal_a_card(player_hand)
+player_hand = Hand('player hand')
+dealer_hand = Hand('dealer hand')
+
+aCard = Card('A', 'H')
+aCard.ace_is_one()
+print(aCard)
+aCard.ace_is_eleven()
+print(aCard)
+
+deal_a_ten(player_hand)
+deal_a_ten(player_hand)
 deal_an_ace(player_hand)
+
+
 # print('player hand:\n' + str(player_hand) + '\n\n')
 # print('dealer hand:\n' + str(dealer_hand))
 
