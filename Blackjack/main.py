@@ -44,7 +44,7 @@ class Card:
     def __str__(self):
         if self.value == 'A':
             self.value = '1 or 11'
-        return 'name: ' + str(self.name) + '\nsuit: ' + self.suit + '\nvalue: ' + str(self.value) + '\n'
+        return 'name: ' + str(self.name) + '\n'
     def ace_is_one(self):
         self.value = 1
     def ace_is_eleven(self):
@@ -129,24 +129,15 @@ def deal_a_ten(a_hand):
             card_to_deal += 13
     print(a_hand.name + ' now holds:\n' + str(a_hand))
 
+def deal_a_hand(a_hand):
+    deal_a_card(a_hand)
+    deal_a_card(a_hand)
+
 def deal_hands():
-    card_is_new = False
-    card_to_deal = 0
-    dealing_to_player = True
-    left_to_deal = 4
-    while left_to_deal > 0:
-        while not card_is_new:
-            card_to_deal = random.randint(1,52)
-            if card_to_deal not in the_deck.delt_cards:
-                card_is_new = True
-        the_deck.delt_cards.append(card_to_deal)
-        if dealing_to_player:
-            player_hand.add(the_deck.deck[card_to_deal])
-            dealing_to_player = not dealing_to_player
-        else:
-            dealer_hand.add(the_deck.deck[card_to_deal])
-            dealing_to_player = not dealing_to_player
-        left_to_deal -= 1
+    deal_a_card(player_hand)
+    deal_a_card(dealer_hand)
+    deal_a_card(player_hand)
+    deal_a_card(dealer_hand)
 #End Methods ======================================================================================
 the_deck = Deck()
 the_deck.build_deck()
@@ -155,17 +146,14 @@ the_deck.build_deck()
 player_hand = Hand('player hand')
 dealer_hand = Hand('dealer hand')
 
-aCard = Card('A', 'H')
-aCard.ace_is_one()
-print(aCard)
-aCard.ace_is_eleven()
-print(aCard)
-
-deal_a_ten(player_hand)
-deal_a_ten(player_hand)
-deal_an_ace(player_hand)
-
-
+deal_a_hand(player_hand)
+playing = True
+while playing == True:
+    answer = input('do you want another card? (y/n)').lower()
+    if answer == 'y':
+        deal_a_card(player_hand)
+    else:
+        playing = False
 # print('player hand:\n' + str(player_hand) + '\n\n')
 # print('dealer hand:\n' + str(dealer_hand))
 
